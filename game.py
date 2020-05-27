@@ -18,7 +18,6 @@ height = 100
 cheese = pygame.image.load(os.path.join(filepath, "images/cheese.png"))
 cheese = pygame.transform.scale(cheese, (30, 30))
 
-
 R1 = pygame.image.load(os.path.join(filepath, "images/Walk (1).png"))
 R1 = pygame.transform.scale(R1, (width, height))
 R2 = pygame.image.load(os.path.join(filepath, "images/Walk (2).png"))
@@ -82,6 +81,17 @@ J9 = pygame.transform.scale(J9, (width, height))
 J10 = pygame.image.load(os.path.join(filepath, "images/Jump (10).png"))
 J10 = pygame.transform.scale(J10, (width, height))
 
+V1 = pygame.image.load(os.path.join(filepath, "images/Run (4).png"))
+V1 = pygame.transform.scale(V1, (width, height))
+V2 = pygame.image.load(os.path.join(filepath, "images/Run (5).png"))
+V2 = pygame.transform.scale(V2, (width, height))
+V3 = pygame.image.load(os.path.join(filepath, "images/Run (6).png"))
+V3 = pygame.transform.scale(V3, (width, height))
+V4 = pygame.image.load(os.path.join(filepath, "images/Run (7).png"))
+V4 = pygame.transform.scale(V4, (width, height))
+V5 = pygame.image.load(os.path.join(filepath, "images/Run (8).png"))
+V5 = pygame.transform.scale(V5, (width, height))
+
 char = pygame.image.load(os.path.join(filepath, "images/Idle (1).png"))
 char = pygame.transform.scale(char, (width, height))
 
@@ -91,7 +101,8 @@ pygame.display.set_icon(favicon)
 walk_right = [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10]
 walk_left = [L1, L2, L3, L4, L5, L7, L7, L8, L9, L10]
 jump_up = [J1,J1,J2,J2,J3,J3,J4 ,J4,J5,J5,J6,J6,J7,J7,J8,J8,J9,J9,J10,J10]
-#jump_up = [J1,J1,J1,J2,J2,J2,J3,J3,J3,J4,J4 J4,J5,J5,J5,J6,J6,J6,J7,J7,J7,J8,J8,J8,J9,J9,J9,J10,J10,J10]
+verticle = [V1, V2, V3, V4, V5, V1, V2, V3, V4, V5]
+
 clock = pygame.time.Clock()
 
 class Player (object):
@@ -130,10 +141,10 @@ class Player (object):
             screen.blit(walk_right[self.walk_count//3], (self.x,self.y))
             self.walk_count += 1
         elif self.up:    
-            screen.blit(walk_left[self.up_count//3], (self.x,self.y))
+            screen.blit(verticle[self.up_count//3], (self.x,self.y))
             self.up_count += 1
         elif self.down:
-            screen.blit(walk_right[self.down_count//3], (self.x,self.y))
+            screen.blit(verticle[self.down_count//3], (self.x,self.y))
             self.down_count += 1    
         else:
             screen.blit(char, (self.x,self.y))    
@@ -186,14 +197,12 @@ while running:
         cleo.up = True
         cleo.right = False
         cleo.left = False
-       # cleo.up_count = 0   
         cleo.down = False
     elif keys[pygame.K_DOWN] and cleo.y < screen_height - cleo.height:  
         cleo.down = True
         cleo.y += cleo.vel
         cleo.right = False
         cleo.left = False
-       # cleo.down_count = 0 
         cleo.up = False  
     else:
         cleo.right = False
