@@ -106,10 +106,20 @@ class Player (object):
         self.left = False
         self.right = False
         self.walk_count = 0
+        self.up = False
+        self.down = False
+        self.up_count = 0
+        self.down_count = 0
 
     def draw(self, screen):
         if self.walk_count + 1 >= 30:
-            self.walk_count = 0
+            self.walk_count = 0   
+        elif self.up_count + 1 >= 30:
+                self.up_count = 0    
+        elif self.down_count + 1 >= 30:
+            self.down_count = 0
+        elif self.up_count + 1 >= 30:
+            self.up_count = 0
         elif self.is_jump:
             for i in jump_up:
                 screen.blit(i, (self.x, self.y))
@@ -119,9 +129,12 @@ class Player (object):
         elif self.right:
             screen.blit(walk_right[self.walk_count//3], (self.x,self.y))
             self.walk_count += 1
-        #     jump_count +=1
-        # screen.blit(jump_up[(jump_count + 10)//3], (x,y))
-        # jump_count +=1    
+        elif self.up:    
+            screen.blit(walk_left[self.up_count//3], (self.x,self.y))
+            self.up_count += 1
+        elif self.down:
+            screen.blit(walk_right[self.down_count//3], (self.x,self.y))
+            self.down_count += 1    
         else:
             screen.blit(char, (self.x,self.y))    
 
@@ -168,26 +181,28 @@ while running:
         cleo.left = False
         cleo.down = False
         cleo.up = False
+    elif keys[pygame.K_UP] and cleo.y > cleo.vel:
+        cleo.y -= cleo.vel
+        cleo.up = True
+        cleo.right = False
+        cleo.left = False
+       # cleo.up_count = 0   
+        cleo.down = False
+    elif keys[pygame.K_DOWN] and cleo.y < screen_height - cleo.height:  
+        cleo.down = True
+        cleo.y += cleo.vel
+        cleo.right = False
+        cleo.left = False
+       # cleo.down_count = 0 
+        cleo.up = False  
     else:
         cleo.right = False
         cleo.left = False
+        cleo.down = False
+        cleo.up = False
         cleo.walk_count = 0    
 
     if not (cleo.is_jump):    
-        if keys[pygame.K_UP] and cleo.y > cleo.vel:
-            cleo.y -= cleo.vel
-            cleo.right = False
-            cleo.left = False
-            cleo.walk_count = 0   
-            cleo.down = False
-            cleo.up = True
-        if keys[pygame.K_DOWN] and cleo.y < screen_height - cleo.height:  
-            cleo.y += cleo.vel
-            cleo.right = False
-            cleo.left = False
-            cleo.walk_count = 0 
-            cleo.down = True
-            cleo.up = False  
         if keys[pygame.K_SPACE]:
            cleo.is_jump = True   
            cleo.right = False
