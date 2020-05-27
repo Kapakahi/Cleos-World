@@ -90,41 +90,48 @@ jump_up = [J1,J1,J2,J2,J3,J3,J4 ,J4,J5,J5,J6,J6,J7,J7,J8,J8,J9,J9,J10,J10]
 #jump_up = [J1,J1,J1,J2,J2,J2,J3,J3,J3,J4,J4 J4,J5,J5,J5,J6,J6,J6,J7,J7,J7,J8,J8,J8,J9,J9,J9,J10,J10,J10]
 clock = pygame.time.Clock()
 
-x = 50
-y = 450
-vel = 5
-is_jump = False
-jump_count = 10
-left = False
-right = False
-walk_count = 0
+class Player (object):
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.vel = 5
+        self.is_jump = False
+        self.jump_count = 10
+        self.left = False
+        self.right = False
+        self.walk_count = 0
 
-def redrawGameWindow():
-    global walk_count
-    global jump_count
-    screen.blit(background_image, (0,0))
-
-    if walk_count + 1 >= 30:
-        walk_count = 0
-    elif left:
-        screen.blit(walk_left[walk_count//3], (x,y))
-        walk_count += 1
-    elif right:
-        screen.blit(walk_right[walk_count//3], (x,y))
-        walk_count +=1
-    elif is_jump:
-        for i in jump_up:
-            screen.blit(i, (x, y))
+    def draw(self, screen):
+        if self.walk_count + 1 >= 30:
+            self.walk_count = 0
+        elif self.is_jump:
+            for i in jump_up:
+                screen.blit(i, (self.x, self.y))
+        elif self.left:
+            screen.blit(walk_left[self.walk_count//3], (self.x,self.y))
+            self.walk_count += 1
+        elif self.right:
+            screen.blit(walk_right[self.walk_count//3], (self.x,self.y))
+            self.walk_count += 1
         #     jump_count +=1
         # screen.blit(jump_up[(jump_count + 10)//3], (x,y))
         # jump_count +=1    
-    else:
-        screen.blit(char, (x,y))    
+        else:
+            screen.blit(char, (self.x,self.y))    
+
+
+
+def redrawGameWindow():
+    screen.blit(background_image, (0,0))
+    cleo.draw(screen)
     pygame.display.update()
 
 
 
 #Loop to keep displaying the window
+cleo = Player(300, 410, width, height)
 running = True 
 while running:
     clock.tick(30)
@@ -133,39 +140,39 @@ while running:
             running = False
 
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT] and x > vel:
-        x -= vel
-        left = True
-        right = False 
-    elif keys[pygame.K_RIGHT] and x < screen_width - width:
-        x += vel
-        right = True
-        left = False
+    if keys[pygame.K_LEFT] and cleo.x > cleo.vel:
+        cleo.x -= cleo.vel
+        cleo.left = True
+        cleo.right = False 
+    elif keys[pygame.K_RIGHT] and cleo.x < screen_width - cleo.width - cleo.vel:
+        cleo.x += cleo.vel
+        cleo.right = True
+        cleo.left = False
     else:
-        right = False
-        left = False
-        walk_count = 0    
+        cleo.right = False
+        cleo.left = False
+        cleo.walk_count = 0    
 
-    if not (is_jump):    
+    if not (cleo.is_jump):    
         # if keys[pygame.K_UP] and y > vel:
         #     y -= vel
         # if keys[pygame.K_DOWN] and y < screen_height - height:  
         #     y += vel
         if keys[pygame.K_SPACE]:
-           is_jump = True   
-           right = False
-           left = False
-           walk_count = 0
+           cleo.is_jump = True   
+           cleo.right = False
+           cleo.left = False
+           cleo.walk_count = 0
     else: 
-        if jump_count >= -10:
+        if cleo.jump_count >= -10:
             neg = 1
-            if jump_count < 0:
+            if cleo.jump_count < 0:
                 neg = -1
-            y -= int((jump_count **2) * 0.5 * neg)
-            jump_count -= 1
+            cleo.y -= int((cleo.jump_count **2) * 0.5 * neg)
+            cleo.jump_count -= 1
         else:
-            is_jump = False
-            jump_count = 10       
+            cleo.is_jump = False
+            cleo.jump_count = 10       
 
     redrawGameWindow()
 
