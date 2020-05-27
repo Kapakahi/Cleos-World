@@ -1,6 +1,5 @@
 import pygame
 import os.path
-
 #initialize pygame
 pygame.init ()
 
@@ -82,44 +81,43 @@ J10 = pygame.transform.scale(J10, (width, height))
 char = pygame.image.load(os.path.join(filepath, "images/Idle (1).png"))
 char = pygame.transform.scale(char, (width, height))
 
-favicon = pygame.image.load(os.path.join(filepath, "images/
-cat-fav.png"))
+favicon = pygame.image.load(os.path.join(filepath, "images/cat-fav.png"))
 pygame.display.set_icon(favicon)
 
-walkRight = [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10]
-walkLeft = [L1, L2, L3, L4, L5, L7, L7, L8, L9, L10]
-jumpUp = [J1,J1,J2,J2,J3,J3,J4 ,J4,J5,J5,J6,J6,J7,J7,J8,J8,J9,J9,J10,J10]
-#jumpUp = [J1,J1,J1,J2,J2,J2,J3,J3,J3,J4,J4 J4,J5,J5,J5,J6,J6,J6,J7,J7,J7,J8,J8,J8,J9,J9,J9,J10,J10,J10]
+walk_right = [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10]
+walk_left = [L1, L2, L3, L4, L5, L7, L7, L8, L9, L10]
+jump_up = [J1,J1,J2,J2,J3,J3,J4 ,J4,J5,J5,J6,J6,J7,J7,J8,J8,J9,J9,J10,J10]
+#jump_up = [J1,J1,J1,J2,J2,J2,J3,J3,J3,J4,J4 J4,J5,J5,J5,J6,J6,J6,J7,J7,J7,J8,J8,J8,J9,J9,J9,J10,J10,J10]
 clock = pygame.time.Clock()
 
 x = 50
 y = 450
 vel = 5
-isJump = False
-jumpCount = 10
+is_jump = False
+jump_count = 10
 left = False
 right = False
-walkCount = 0
+walk_count = 0
 
 def redrawGameWindow():
-    global walkCount
-    global jumpCount
+    global walk_count
+    global jump_count
     screen.blit(background_image, (0,0))
 
-    if walkCount + 1 >= 30:
-        walkCount = 0
+    if walk_count + 1 >= 30:
+        walk_count = 0
     elif left:
-        screen.blit(walkLeft[walkCount//3], (x,y))
-        walkCount += 1
+        screen.blit(walk_left[walk_count//3], (x,y))
+        walk_count += 1
     elif right:
-        screen.blit(walkRight[walkCount//3], (x,y))
-        walkCount +=1
-    elif isJump:
-        for i in jumpUp:
+        screen.blit(walk_right[walk_count//3], (x,y))
+        walk_count +=1
+    elif is_jump:
+        for i in jump_up:
             screen.blit(i, (x, y))
-        #     jumpCount +=1
-        # screen.blit(jumpUp[(jumpCount + 10)//3], (x,y))
-        # jumpCount +=1    
+        #     jump_count +=1
+        # screen.blit(jump_up[(jump_count + 10)//3], (x,y))
+        # jump_count +=1    
     else:
         screen.blit(char, (x,y))    
     pygame.display.update()
@@ -146,28 +144,28 @@ while running:
     else:
         right = False
         left = False
-        walkCount = 0    
+        walk_count = 0    
 
-    if not (isJump):    
+    if not (is_jump):    
         # if keys[pygame.K_UP] and y > vel:
         #     y -= vel
         # if keys[pygame.K_DOWN] and y < screen_height - height:  
         #     y += vel
         if keys[pygame.K_SPACE]:
-           isJump = True   
+           is_jump = True   
            right = False
            left = False
-           walkCount = 0
+           walk_count = 0
     else: 
-        if jumpCount >= -10:
+        if jump_count >= -10:
             neg = 1
-            if jumpCount < 0:
+            if jump_count < 0:
                 neg = -1
-            y -= int((jumpCount **2) * 0.5 * neg)
-            jumpCount -= 1
+            y -= int((jump_count **2) * 0.5 * neg)
+            jump_count -= 1
         else:
-            isJump = False
-            jumpCount = 10       
+            is_jump = False
+            jump_count = 10       
 
     redrawGameWindow()
 
