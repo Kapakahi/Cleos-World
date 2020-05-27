@@ -15,6 +15,10 @@ background_image = pygame.image.load(os.path.join(filepath, "images/practicebk.p
 width = 100
 height = 100
 
+cheese = pygame.image.load(os.path.join(filepath, "images/cheese.png"))
+cheese = pygame.transform.scale(cheese, (30, 30))
+
+
 R1 = pygame.image.load(os.path.join(filepath, "images/Walk (1).png"))
 R1 = pygame.transform.scale(R1, (width, height))
 R2 = pygame.image.load(os.path.join(filepath, "images/Walk (2).png"))
@@ -122,16 +126,28 @@ class Player (object):
             screen.blit(char, (self.x,self.y))    
 
 
-
 def redrawGameWindow():
     screen.blit(background_image, (0,0))
     cleo.draw(screen)
+    food.draw(screen)
+    food2.draw(screen)
     pygame.display.update()
 
+class Reward(object):
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
 
+    def draw(self, screen):
+        screen.blit(cheese, (self.x, self.y))
 
 #Loop to keep displaying the window
 cleo = Player(300, 410, width, height)
+
+food = Reward(400, 500, 30, 30)
+food2 = Reward (500, 600, 100, 100)
 running = True 
 while running:
     clock.tick(30)
