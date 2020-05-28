@@ -1,4 +1,4 @@
-import pygame
+import pygame, sys, random
 import os.path
 #initialize pygame
 pygame.init ()
@@ -149,29 +149,47 @@ class Player (object):
         else:
             screen.blit(char, (self.x,self.y))    
 
+class Reward(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y, item):
+        super().__init__()
+        self.image = item
+        self.rect = self.image.get_rect()
+        self.rect.center = [pos_x, pos_y]
+    #     self.x = x
+    #     self.y = y
+    #     self.width = width
+    #     self.height = height
+
+    # def draw(self, screen):
+    #     screen.blit(cheese, (self.x, self.y))
 
 def redrawGameWindow():
     screen.blit(background_image, (0,0))
     cleo.draw(screen)
-    food.draw(screen)
-    food2.draw(screen)
+    # food.draw(screen)
+    # food2.draw(screen)
+    yummy_group.draw(screen)
     pygame.display.update()
 
-class Reward(object):
-    def __init__(self, x, y, width, height):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-
-    def draw(self, screen):
-        screen.blit(cheese, (self.x, self.y))
 
 #Loop to keep displaying the window
 cleo = Player(300, 410, width, height)
 
-food = Reward(400, 500, 30, 30)
-food2 = Reward (500, 600, 100, 100)
+# food = Reward(400, 500, 30, 30)
+# food2 = Reward (500, 600, 100, 100)
+
+#rewards to collect
+
+yummy_group = pygame.sprite.Group()
+for  target in range (10):
+    new_yummy = Reward(
+        random.randrange(0, screen_width), 
+        random.randrange(0, screen_height),
+        cheese)
+    yummy_group.add(new_yummy)
+
+#yummy_group.add(yummy)
+
 running = True 
 while running:
     clock.tick(30)
