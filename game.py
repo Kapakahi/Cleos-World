@@ -9,6 +9,7 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 
 pygame.display.set_caption("Cleo's World")
 
+
 filepath = os.path.dirname(__file__)
 background_image = pygame.image.load(os.path.join(filepath, "images/jungle2.jpg")).convert()
 
@@ -110,8 +111,12 @@ clock = pygame.time.Clock()
 
 score = 0
 meow = pygame.mixer.Sound("sounds/catmeow.wav")
-#music = pygame.mixer.music.load(os.path.join(filepath, "sounds/xxxx.mp"))
-#pygame.mixer.music.play(-1)
+
+SONG_END = pygame.USEREVENT + 1
+
+pygame.mixer.music.set_endevent(SONG_END)
+pygame.mixer.music.load("sounds/TownTheme.mp3")
+pygame.mixer.music.play()
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
@@ -232,6 +237,51 @@ def redrawGameWindow():
     all_sprites.draw(screen)
     cleo.update()
     cleo.draw(screen)
+    end_screen()
+
+def end_screen():
+    # if not running:
+    #     return
+    if event.type == SONG_END: 
+        screen.fill((15, 67, 52))
+        draw_text("Game Over", 48, (255, 255, 255), screen_width / 2, screen_height / 4)
+        draw_text("Purr points: " + str(score), 22, (255, 255, 255), screen_width / 2, screen_height / 2 )
+        pygame.display.flip()
+
+def splash_screen():
+    # if not running:
+    #     return
+    running = False
+    screen.fill((15, 67, 52))
+    draw_text("Hello", 48, (255, 255, 255), screen_width / 2, screen_height / 4)
+    draw_text("Purr points: " + str(score), 22, (255, 255, 255), screen_width / 2, screen_height / 2 )
+    pygame.display.flip()   
+    wait_for_key()
+
+def wait_for_key():
+    waiting = True
+    while waiting:
+        clock.tick(30)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                waiting = False
+                running = False
+            if event.type == pygame.KEYUP:
+                waiting = False             
+
+def draw_text(text, size, color, x, y):
+    font = pygame.font.Font(pygame.font.match_font("times"), size)    
+    text_surface = font.render(text, True, color)
+    text_rect = text_surface.get_rect()
+    text_rect.midtop = (int(x), int(y))
+    screen.blit(text_surface, text_rect)
+
+    # game_over_text = font.render('Game Over', 1, (0, 0, 0))
+    # screen.blit(game_over_text, (700,300))
+    # game_over_score = smaller_font.render('Purr points: ' + str(score), 1, (0, 0, 0))
+    # screen.blit(game_over_score, (700, 345))
+    # print("IS this working?@#??")
+
 
 
 all_sprites = pygame.sprite.Group()
@@ -251,26 +301,32 @@ for  target in range (10):
     all_sprites.add(new_yummy)
 
 
-running = True 
-
+running = False 
+splash_screen()
 font = pygame.font.SysFont('times', 30, True)
+smaller_font = pygame.font.SysFont('times', 20, True)
 while running:
-    clock.tick(30)
-    for event in pygame.event.get(): 
-        if event.type == pygame.QUIT:
-            running = False
+    #clock.tick(30)
+    # for event in pygame.event.get(): 
+        # if event.type == SONG_END:
+        #     end_screen()
+        #     #running = False
+        #     print("the song ended!")
+        # if event.type == pygame.QUIT:
+        #     running = False
     
     got_cheese = pygame.sprite.groupcollide(
         cleo_group, yummy_group, False, True, pygame.sprite.collide_mask)
 
     for hit in got_cheese:
-        score += 10
+        score += 16
         new_yummy.got()
         meow.play()
 
- 
+    end_screen()
     redrawGameWindow()
     pygame.display.update()
+  
 
 
 pygame.quit()  
