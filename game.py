@@ -105,12 +105,12 @@ verticle = [V1, V2, V3, V4, V5, V1, V2, V3, V4, V5]
 
 clock = pygame.time.Clock()
 
-class Player (object):
+class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
+        super().__init__()
+        self.image = char
+        self.rect = self.image.get_rect()
+        self.rect.center = [x, y]
         self.vel = 5
         self.is_jump = False
         self.jump_count = 10
@@ -121,6 +121,10 @@ class Player (object):
         self.down = False
         self.up_count = 0
         self.down_count = 0
+        self.x = x
+        self.y = y
+        self.height = height
+        self.width = width
 
     def draw(self, screen):
         if self.walk_count + 1 >= 30:
@@ -147,7 +151,57 @@ class Player (object):
             screen.blit(verticle[self.down_count//3], (self.x,self.y))
             self.down_count += 1    
         else:
-            screen.blit(char, (self.x,self.y))    
+            screen.blit(char, (self.x,self.y))   
+
+    def update(self):         
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] and self.x > self.vel:
+            self.x -= self.vel
+            self.left = True
+            self.right = False 
+            self.down = False
+            self.up = False
+        elif keys[pygame.K_RIGHT] and self.x < screen_width -self.width - self.vel:
+            self.x += self.vel
+            self.right = True
+            self.left = False
+            self.down = False
+            self.up = False
+        elif keys[pygame.K_UP] and self.y > self.vel:
+            self.y -= self.vel
+            self.up = True
+            self.right = False
+            self.left = False
+            self.down = False
+        elif keys[pygame.K_DOWN] and self.y < screen_height - self.height:  
+            self.down = True
+            self.y += self.vel
+            self.right = False
+            self.left = False
+            self.up = False  
+        else:
+            self.right = False
+            self.left = False
+            self.down = False
+            self.up = False
+            self.walk_count = 0    
+
+        if not (self.is_jump):    
+            if keys[pygame.K_SPACE]:
+                self.is_jump = True   
+                self.right = False
+                self.left = False
+                self.walk_count = 0
+        else: 
+            if self.jump_count >= -10:
+                neg = 1
+                if self.jump_count < 0:
+                    neg = -1
+                self.y -= int((self.jump_count **2) * 0.5 * neg)
+                self.jump_count -= 1
+            else:
+                self.is_jump = False
+                self.jump_count = 10       
 
 class Reward(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y, item):
@@ -165,20 +219,32 @@ class Reward(pygame.sprite.Sprite):
 
 def redrawGameWindow():
     screen.blit(background_image, (0,0))
-    cleo.draw(screen)
+    ###cleo.draw(screen)
     # food.draw(screen)
     # food2.draw(screen)
     yummy_group.draw(screen)
+   # cleo_group.draw(screen)
+    cleo.draw(screen)
     pygame.display.update()
+    yummy_group.update()
+    all_sprites.update()
 
 
 #Loop to keep displaying the window
-cleo = Player(300, 410, width, height)
+#cleo = Player(300, 410, width, height)
 
 # food = Reward(400, 500, 30, 30)
 # food2 = Reward (500, 600, 100, 100)
 
 #rewards to collect
+
+all_sprites = pygame.sprite.Group()
+cleo = Player(800, 700, 150, 150)
+all_sprites.add(cleo)
+
+# cleo_group = pygame.sprite.Group()
+# cleo = Player(800, 700, 150, 150)
+# cleo_group.add(cleo)
 
 yummy_group = pygame.sprite.Group()
 for  target in range (10):
@@ -197,55 +263,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT] and cleo.x > cleo.vel:
-        cleo.x -= cleo.vel
-        cleo.left = True
-        cleo.right = False 
-        cleo.down = False
-        cleo.up = False
-    elif keys[pygame.K_RIGHT] and cleo.x < screen_width - cleo.width - cleo.vel:
-        cleo.x += cleo.vel
-        cleo.right = True
-        cleo.left = False
-        cleo.down = False
-        cleo.up = False
-    elif keys[pygame.K_UP] and cleo.y > cleo.vel:
-        cleo.y -= cleo.vel
-        cleo.up = True
-        cleo.right = False
-        cleo.left = False
-        cleo.down = False
-    elif keys[pygame.K_DOWN] and cleo.y < screen_height - cleo.height:  
-        cleo.down = True
-        cleo.y += cleo.vel
-        cleo.right = False
-        cleo.left = False
-        cleo.up = False  
-    else:
-        cleo.right = False
-        cleo.left = False
-        cleo.down = False
-        cleo.up = False
-        cleo.walk_count = 0    
-
-    if not (cleo.is_jump):    
-        if keys[pygame.K_SPACE]:
-           cleo.is_jump = True   
-           cleo.right = False
-           cleo.left = False
-           cleo.walk_count = 0
-    else: 
-        if cleo.jump_count >= -10:
-            neg = 1
-            if cleo.jump_count < 0:
-                neg = -1
-            cleo.y -= int((cleo.jump_count **2) * 0.5 * neg)
-            cleo.jump_count -= 1
-        else:
-            cleo.is_jump = False
-            cleo.jump_count = 10       
-
+    all_sprites.update()
     redrawGameWindow()
 
 
