@@ -118,6 +118,8 @@ pygame.mixer.music.set_endevent(SONG_END)
 pygame.mixer.music.load("sounds/TownTheme.mp3")
 pygame.mixer.music.play()
 
+font = pygame.font.SysFont('times', 30, True)
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
         super().__init__()
@@ -237,26 +239,39 @@ def redrawGameWindow():
     all_sprites.draw(screen)
     cleo.update()
     cleo.draw(screen)
-    end_screen()
+    pygame.display.update()  
+    #end_screen()
 
 def end_screen():
-    # if not running:
-    #     return
-    if event.type == SONG_END: 
-        screen.fill((15, 67, 52))
-        draw_text("Game Over", 48, (255, 255, 255), screen_width / 2, screen_height / 4)
-        draw_text("Purr points: " + str(score), 22, (255, 255, 255), screen_width / 2, screen_height / 2 )
-        pygame.display.flip()
+    if not running:
+        return
+    # for event in pygame.event.get(): 
+    #     if event.type == SONG_END: 
+    screen.fill((15, 67, 52))
+    draw_text("Game Over", 48, (255, 255, 255), screen_width / 2, screen_height / 4)
+    draw_text("Purr points: " + str(score), 22, (255, 255, 255), screen_width / 2, screen_height / 2 )
+    pygame.display.flip()
+    wait_for_key()
 
 def splash_screen():
     # if not running:
     #     return
     running = False
     screen.fill((15, 67, 52))
-    draw_text("Hello", 48, (255, 255, 255), screen_width / 2, screen_height / 4)
-    draw_text("Purr points: " + str(score), 22, (255, 255, 255), screen_width / 2, screen_height / 2 )
+    draw_text("Welcome to Cleo's World", 48, (255, 255, 255), screen_width / 2, screen_height / 4)
+    draw_text("Use arrows to move and Space to jump", 26, (255, 255, 255), screen_width / 2, screen_height / 2 )
+    draw_text("Collect treats to make Cleo purr!", 26, (255, 255, 255), screen_width / 2, (screen_height / 2) - 50 )
+    draw_text("Press a key to play", 22, (255,255, 255), screen_width / 2, screen_height * 3 / 4)
     pygame.display.flip()   
     wait_for_key()
+
+def run():
+    playing = True
+    while playing:
+        clock.tick(30)
+        redrawGameWindow()
+        pygame.display.update()  
+        cleo.update()  
 
 def wait_for_key():
     waiting = True
@@ -267,7 +282,12 @@ def wait_for_key():
                 waiting = False
                 running = False
             if event.type == pygame.KEYUP:
-                waiting = False             
+                waiting = False
+                running = True
+                redrawGameWindow()
+                  
+    # redrawGameWindow()
+    # pygame.display.update()                     
 
 def draw_text(text, size, color, x, y):
     font = pygame.font.Font(pygame.font.match_font("times"), size)    
@@ -303,10 +323,10 @@ for  target in range (10):
 
 running = False 
 splash_screen()
-font = pygame.font.SysFont('times', 30, True)
 smaller_font = pygame.font.SysFont('times', 20, True)
 while running:
-    #clock.tick(30)
+    #c
+    # clock.tick(30)
     # for event in pygame.event.get(): 
         # if event.type == SONG_END:
         #     end_screen()
@@ -314,6 +334,7 @@ while running:
         #     print("the song ended!")
         # if event.type == pygame.QUIT:
         #     running = False
+    run()
     
     got_cheese = pygame.sprite.groupcollide(
         cleo_group, yummy_group, False, True, pygame.sprite.collide_mask)
@@ -324,10 +345,8 @@ while running:
         meow.play()
 
     end_screen()
-    redrawGameWindow()
-    pygame.display.update()
+    # redrawGameWindow()
+    # pygame.display.update()
   
-
-
-pygame.quit()  
-sys.exit()
+# pygame.quit()  
+# sys.exit()
