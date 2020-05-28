@@ -228,6 +228,7 @@ class Reward(pygame.sprite.Sprite):
         
 
 def splash_screen():
+    # global running
     # if not running:
     #     return
     running = False
@@ -269,12 +270,11 @@ def run():
             score += 16
             meow.play()
         
-
         for event in pygame.event.get(): 
             if event.type == SONG_END:
                 end_screen()
                 print("the song ended!")
-            if event.type == pygame.QUIT:
+            elif event.type == pygame.QUIT:
                 running = False
         clock.tick(30)
         pygame.display.update()  
