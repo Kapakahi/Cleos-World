@@ -10,7 +10,7 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Cleo's World")
 
 filepath = os.path.dirname(__file__)
-background_image = pygame.image.load(os.path.join(filepath, "images/practicebk.png")).convert()
+background_image = pygame.image.load(os.path.join(filepath, "images/jungle2.jpg")).convert()
 
 width = 100
 height = 100
@@ -232,3 +232,4 @@ while running:
 
 
 pygame.quit()  
+sys.exit()
