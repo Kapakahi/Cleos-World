@@ -18,6 +18,9 @@ height = 100
 cheese = pygame.image.load(os.path.join(filepath, "images/cheese.png"))
 cheese = pygame.transform.scale(cheese, (30, 30))
 
+mouse = pygame.image.load(os.path.join(filepath, "images/mouse.png"))
+mouse = pygame.transform.scale(mouse, (100, 130))
+
 R1 = pygame.image.load(os.path.join(filepath, "images/Walk (1).png"))
 R1 = pygame.transform.scale(R1, (width, height))
 R2 = pygame.image.load(os.path.join(filepath, "images/Walk (2).png"))
@@ -105,6 +108,11 @@ verticle = [V1, V2, V3, V4, V5, V1, V2, V3, V4, V5]
 
 clock = pygame.time.Clock()
 
+score = 0
+meow = pygame.mixer.Sound("sounds/catmeow.wav")
+#music = pygame.mixer.music.load(os.path.join(filepath, "sounds/xxxx.mp"))
+#pygame.mixer.music.play(-1)
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
         super().__init__()
@@ -121,8 +129,8 @@ class Player(pygame.sprite.Sprite):
         self.down = False
         self.up_count = 0
         self.down_count = 0
-        self.x = x
-        self.y = y
+        self.rect.x = x
+        self.rect.y = y
         self.height = height
         self.width = width
 
@@ -148,34 +156,34 @@ class Player(pygame.sprite.Sprite):
             screen.blit(verticle[self.up_count//3], (self.x,self.y))
             self.up_count += 1
         elif self.down:
-            screen.blit(verticle[self.down_count//3], (self.x,self.y))
+            screen.blit(verticle[self.down_count//3], (self.rect.x,self.rect.y))
             self.down_count += 1    
         else:
             screen.blit(char, (self.x,self.y))   
 
     def update(self):         
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] and self.x > self.vel:
-            self.x -= self.vel
+        if keys[pygame.K_LEFT] and self.rect.x > self.vel:
+            self.rect.x -= self.vel
             self.left = True
             self.right = False 
             self.down = False
             self.up = False
-        elif keys[pygame.K_RIGHT] and self.x < screen_width -self.width - self.vel:
-            self.x += self.vel
+        elif keys[pygame.K_RIGHT] and self.rect.x < screen_width -self.width - self.vel:
+            self.rect.x += self.vel
             self.right = True
             self.left = False
             self.down = False
             self.up = False
-        elif keys[pygame.K_UP] and self.y > self.vel:
-            self.y -= self.vel
+        elif keys[pygame.K_UP] and self.rect.y > self.vel:
+            self.rect.y -= self.vel
             self.up = True
             self.right = False
             self.left = False
             self.down = False
-        elif keys[pygame.K_DOWN] and self.y < screen_height - self.height:  
+        elif keys[pygame.K_DOWN] and self.rect.y < screen_height - self.height:  
             self.down = True
-            self.y += self.vel
+            self.rect.y += self.vel
             self.right = False
             self.left = False
             self.up = False  
@@ -197,11 +205,18 @@ class Player(pygame.sprite.Sprite):
                 neg = 1
                 if self.jump_count < 0:
                     neg = -1
-                self.y -= int((self.jump_count **2) * 0.5 * neg)
+                self.rect.y -= int((self.jump_count **2) * 0.5 * neg)
                 self.jump_count -= 1
             else:
                 self.is_jump = False
-                self.jump_count = 10       
+                self.jump_count = 10  
+        # collision = pygame.sprite.spritecollide(cleo, yummy_group, True)    
+        # if collision:
+        #     print("ADAFSDFASDFASD")         
+
+    def collide(self, all_sprites):
+        if pygame.sprite.spritecollide(self, all_sprites, True):
+            print("AAAAAAA")   
 
 class Reward(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y, item):
@@ -209,32 +224,39 @@ class Reward(pygame.sprite.Sprite):
         self.image = item
         self.rect = self.image.get_rect()
         self.rect.center = [pos_x, pos_y]
-    #     self.x = x
+        
+    def got(self):
+        print('Happppppppy')
+  
+    #     self.x = xs
     #     self.y = y
     #     self.width = width
     #     self.height = height
 
     # def draw(self, screen):
     #     screen.blit(cheese, (self.x, self.y))
+mouseTest = Reward(400, 400, char)
 
 def redrawGameWindow():
     screen.blit(background_image, (0,0))
+    text = font.render('Purr points: ' + str(score), 1, (0, 0, 0))
+    screen.blit(text, (15, 15))
     ###cleo.draw(screen)
     # food.draw(screen)
     # food2.draw(screen)
-    yummy_group.draw(screen)
+    #yummy_group.draw(screen)
    # cleo_group.draw(screen)
-    cleo.draw(screen)
-    pygame.display.update()
-    yummy_group.update()
-    all_sprites.update()
+    #cleo.draw(screen)
+    #pygame.display.update()
+    #yummy_group.update()
+    #all_sprites.update()
+   # mouseTest.draw(screen)
+   # cleo.draw(screen)
+    all_sprites.draw(screen)
+    cleo.update()
 
 
 #Loop to keep displaying the window
-#cleo = Player(300, 410, width, height)
-
-# food = Reward(400, 500, 30, 30)
-# food2 = Reward (500, 600, 100, 100)
 
 #rewards to collect
 
@@ -242,29 +264,40 @@ all_sprites = pygame.sprite.Group()
 cleo = Player(800, 700, 150, 150)
 all_sprites.add(cleo)
 
-# cleo_group = pygame.sprite.Group()
-# cleo = Player(800, 700, 150, 150)
-# cleo_group.add(cleo)
+cleo_group = pygame.sprite.Group()
+cleo_group.add(cleo)
+
 
 yummy_group = pygame.sprite.Group()
 for  target in range (10):
     new_yummy = Reward(
-        random.randrange(0, screen_width), 
-        random.randrange(0, screen_height),
+        random.randrange(50, screen_width), 
+        random.randrange(40, screen_height),
         cheese)
     yummy_group.add(new_yummy)
+    all_sprites.add(new_yummy)
 
-#yummy_group.add(yummy)
 
 running = True 
+
+font = pygame.font.SysFont('times', 30, True)
 while running:
     clock.tick(30)
     for event in pygame.event.get(): 
         if event.type == pygame.QUIT:
             running = False
+    
+    got_cheese = pygame.sprite.groupcollide(
+        cleo_group, yummy_group, False, True, pygame.sprite.collide_mask)
 
-    all_sprites.update()
+    for hit in got_cheese:
+        score += 10
+        new_yummy.got()
+        meow.play()
+   # all_sprites.update()
     redrawGameWindow()
+    #cleo.update()
+    pygame.display.update()
 
 
 pygame.quit()  
