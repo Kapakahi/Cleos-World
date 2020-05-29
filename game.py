@@ -111,7 +111,7 @@ clock = pygame.time.Clock()
 score = 0
 meow = pygame.mixer.Sound("sounds/catmeow.wav")
 
-SONG_END = pygame.USEREVENT + 1
+SONG_END = pygame.USEREVENT + 0
 
 pygame.mixer.music.set_endevent(SONG_END)
 pygame.mixer.music.load("sounds/TownTheme.mp3")
@@ -177,7 +177,7 @@ class Player(pygame.sprite.Sprite):
             self.right = False 
             self.down = False
             self.up = False
-        elif keys[pygame.K_RIGHT] and self.rect.x < screen_width -self.width - self.vel:
+        elif keys[pygame.K_RIGHT] and self.rect.x < screen_width - self.width + self.vel + 55:
             self.rect.x += self.vel
             self.right = True
             self.left = False
@@ -225,6 +225,9 @@ class Reward(pygame.sprite.Sprite):
         self.image = item
         self.rect = self.image.get_rect()
         self.rect.center = [pos_x, pos_y]
+
+# add_reward = pygame.USEREVENT + 1
+# pygame.time.set_timer(add_reward, 500)        
         
 
 def splash_screen():
@@ -234,7 +237,7 @@ def splash_screen():
     running = False
     screen.fill((15, 67, 52))
     draw_text("Welcome to Cleo's World", 48, (255, 255, 255), screen_width / 2, screen_height / 4)
-    draw_text("Use arrows to move and Space to jump", 26, (255, 255, 255), screen_width / 2, screen_height / 2 )
+    draw_text("Use the arrows to move and the space bar to jump", 26, (255, 255, 255), screen_width / 2, screen_height / 2 )
     draw_text("Collect treats to make Cleo purr!", 26, (255, 255, 255), screen_width / 2, (screen_height / 2) - 50 )
     draw_text("Press a key to play", 22, (255,255, 255), screen_width / 2, screen_height * 3 / 4)
     pygame.display.flip()   
@@ -276,10 +279,19 @@ def run():
                 print("the song ended!")
             elif event.type == pygame.QUIT:
                 running = False
+            # elif event.type == add_reward:
+            #     new_reward = Reward(
+            #         random.randrange(50, screen_width), 
+            #         random.randrange(40, screen_height - 30),
+            #         cheese)
+            #     yummy_group.add(new_reward)
+            #     all_sprites.add(new_reward)    
+
         clock.tick(30)
         pygame.display.update()  
         cleo.update()  
         redrawGameWindow()
+        # yummy_group.update()
 
 def wait_for_key():
     waiting = True
