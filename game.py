@@ -226,8 +226,8 @@ class Reward(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = [pos_x, pos_y]
 
-# add_reward = pygame.USEREVENT + 1
-# pygame.time.set_timer(add_reward, 500)        
+add_reward = pygame.USEREVENT + 1
+pygame.time.set_timer(add_reward, 2750)        
         
 
 def splash_screen():
@@ -279,19 +279,19 @@ def run():
                 print("the song ended!")
             elif event.type == pygame.QUIT:
                 running = False
-            # elif event.type == add_reward:
-            #     new_reward = Reward(
-            #         random.randrange(50, screen_width), 
-            #         random.randrange(40, screen_height - 30),
-            #         cheese)
-            #     yummy_group.add(new_reward)
-            #     all_sprites.add(new_reward)    
+            elif event.type == add_reward:
+                new_reward = Reward(
+                    random.randrange(50, screen_width), 
+                    random.randrange(40, screen_height - 30),
+                    cheese)
+                yummy_group.add(new_reward)
+                all_sprites.add(new_reward)    
 
         clock.tick(30)
         pygame.display.update()  
         cleo.update()  
         redrawGameWindow()
-        # yummy_group.update()
+        yummy_group.update()
 
 def wait_for_key():
     waiting = True
