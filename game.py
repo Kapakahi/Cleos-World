@@ -18,8 +18,8 @@ height = 100
 cheese = pygame.image.load(os.path.join(filepath, "images/cheese.png"))
 cheese = pygame.transform.scale(cheese, (30, 30))
 
-mouse = pygame.image.load(os.path.join(filepath, "images/mouse.png"))
-mouse = pygame.transform.scale(mouse, (100, 130))
+mouse = pygame.image.load(os.path.join(filepath, "images/gray.png"))
+mouse = pygame.transform.scale(mouse, (50, 50))
 
 R1 = pygame.image.load(os.path.join(filepath, "images/Walk (1).png"))
 R1 = pygame.transform.scale(R1, (width, height))
@@ -110,6 +110,7 @@ clock = pygame.time.Clock()
 
 score = 0
 meow = pygame.mixer.Sound("sounds/catmeow.wav")
+purr = pygame.mixer.Sound("sounds/cat_purr.wav")
 
 SONG_END = pygame.USEREVENT + 0
 
@@ -272,6 +273,14 @@ def run():
             global score 
             score += 16
             meow.play()
+
+        got_mouse = pygame.sprite.groupcollide(
+        cleo_group, mouse_group, False, True, pygame.sprite.collide_mask)
+
+        for hit in got_mouse:
+            #global score 
+            score += 19
+            purr.play()    
         
         for event in pygame.event.get(): 
             if event.type == SONG_END:
@@ -322,13 +331,22 @@ cleo_group = pygame.sprite.Group()
 cleo_group.add(cleo)
 
 yummy_group = pygame.sprite.Group()
-for  target in range (10):
+for  target in range (8):
     new_yummy = Reward(
         random.randrange(50, screen_width), 
         random.randrange(40, screen_height - 30),
         cheese)
     yummy_group.add(new_yummy)
     all_sprites.add(new_yummy)
+
+mouse_group = pygame.sprite.Group()
+for  target in range (3):
+    new_mouse = Reward(
+        random.randrange(50, screen_width), 
+        random.randrange(40, screen_height - 30),
+        mouse)
+    mouse_group.add(new_mouse)
+    all_sprites.add(new_mouse)    
 
 splash_screen()
 
