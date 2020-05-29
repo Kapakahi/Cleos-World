@@ -18,6 +18,9 @@ height = 100
 cheese = pygame.image.load(os.path.join(filepath, "images/cheese.png"))
 cheese = pygame.transform.scale(cheese, (30, 30))
 
+mouse = pygame.image.load(os.path.join(filepath, "images/gray.png"))
+mouse = pygame.transform.scale(mouse, (50, 50))
+
 R1 = pygame.image.load(os.path.join(filepath, "images/Walk (1).png"))
 R1 = pygame.transform.scale(R1, (width, height))
 R2 = pygame.image.load(os.path.join(filepath, "images/Walk (2).png"))
@@ -105,12 +108,26 @@ verticle = [V1, V2, V3, V4, V5, V1, V2, V3, V4, V5]
 
 clock = pygame.time.Clock()
 
-class Player (object):
+score = 0
+meow = pygame.mixer.Sound("sounds/catmeow.wav")
+purr = pygame.mixer.Sound("sounds/cat_purr.wav")
+
+SONG_END = pygame.USEREVENT + 0
+
+pygame.mixer.music.set_endevent(SONG_END)
+pygame.mixer.music.load("sounds/TownTheme.mp3")
+pygame.mixer.music.play()
+
+font = pygame.font.SysFont('times', 30, True)
+
+running = True
+
+class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
+        super().__init__()
+        self.image = char
+        self.rect = self.image.get_rect()
+        self.rect.center = [x, y]
         self.vel = 5
         self.is_jump = False
         self.jump_count = 10
@@ -121,6 +138,10 @@ class Player (object):
         self.down = False
         self.up_count = 0
         self.down_count = 0
+        self.rect.x = x
+        self.rect.y = y
+        self.height = height
+        self.width = width
 
     def draw(self, screen):
         if self.walk_count + 1 >= 30:
@@ -133,21 +154,71 @@ class Player (object):
             self.up_count = 0
         elif self.is_jump:
             for i in jump_up:
-                screen.blit(i, (self.x, self.y))
+                screen.blit(i, (self.rect.x, self.rect.y))
         elif self.left:
-            screen.blit(walk_left[self.walk_count//3], (self.x,self.y))
+            screen.blit(walk_left[self.walk_count//3], (self.rect.x,self.rect.y))
             self.walk_count += 1
         elif self.right:
-            screen.blit(walk_right[self.walk_count//3], (self.x,self.y))
+            screen.blit(walk_right[self.walk_count//3], (self.rect.x,self.rect.y))
             self.walk_count += 1
         elif self.up:    
-            screen.blit(verticle[self.up_count//3], (self.x,self.y))
+            screen.blit(verticle[self.up_count//3], (self.rect.x,self.rect.y))
             self.up_count += 1
         elif self.down:
-            screen.blit(verticle[self.down_count//3], (self.x,self.y))
+            screen.blit(verticle[self.down_count//3], (self.rect.x,self.rect.y))
             self.down_count += 1    
         else:
-            screen.blit(char, (self.x,self.y))    
+            screen.blit(char, (self.rect.x,self.rect.y))   
+
+    def update(self):         
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] and self.rect.x > self.vel:
+            self.rect.x -= self.vel
+            self.left = True
+            self.right = False 
+            self.down = False
+            self.up = False
+        elif keys[pygame.K_RIGHT] and self.rect.x < screen_width - self.width + self.vel + 55:
+            self.rect.x += self.vel
+            self.right = True
+            self.left = False
+            self.down = False
+            self.up = False
+        elif keys[pygame.K_UP] and self.rect.y > self.vel:
+            self.rect.y -= self.vel
+            self.up = True
+            self.right = False
+            self.left = False
+            self.down = False
+        elif keys[pygame.K_DOWN] and self.rect.y < screen_height - self.height + 35:  
+            self.down = True
+            self.rect.y += self.vel
+            self.right = False
+            self.left = False
+            self.up = False  
+        else:
+            self.right = False
+            self.left = False
+            self.down = False
+            self.up = False
+            self.walk_count = 0    
+
+        if not (self.is_jump):    
+            if keys[pygame.K_SPACE]:
+                self.is_jump = True   
+                self.right = False
+                self.left = False
+                self.walk_count = 0
+        else: 
+            if self.jump_count >= -10:
+                neg = 1
+                if self.jump_count < 0:
+                    neg = -1
+                self.rect.y -= int((self.jump_count **2) * 0.5 * neg)
+                self.jump_count -= 1
+            else:
+                self.is_jump = False
+                self.jump_count = 10  
 
 class Reward(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y, item):
@@ -155,99 +226,143 @@ class Reward(pygame.sprite.Sprite):
         self.image = item
         self.rect = self.image.get_rect()
         self.rect.center = [pos_x, pos_y]
-    #     self.x = x
-    #     self.y = y
-    #     self.width = width
-    #     self.height = height
 
-    # def draw(self, screen):
-    #     screen.blit(cheese, (self.x, self.y))
+add_cheese_reward = pygame.USEREVENT + 1
+pygame.time.set_timer(add_cheese_reward, 3000)        
+
+add_mouse_reward = pygame.USEREVENT + 4
+pygame.time.set_timer(add_mouse_reward, 4000)   
+        
+
+def splash_screen():
+    # global running
+    # if not running:
+    #     return
+    running = False
+    screen.fill((15, 67, 52))
+    draw_text("Welcome to Cleo's World", 48, (255, 255, 255), screen_width / 2, screen_height / 4)
+    draw_text("Use the arrows to move and the space bar to jump", 26, (255, 255, 255), screen_width / 2, screen_height / 2 )
+    draw_text("Collect treats to make Cleo purr!", 26, (255, 255, 255), screen_width / 2, (screen_height / 2) - 50 )
+    draw_text("Press a key to play", 22, (255,255, 255), screen_width / 2, screen_height * 3 / 4)
+    pygame.display.flip()   
+    wait_for_key()
 
 def redrawGameWindow():
     screen.blit(background_image, (0,0))
+    text = font.render('Purr points: ' + str(score), 1, (0, 0, 0))
+    screen.blit(text, (15, 15))
+    all_sprites.draw(screen)
     cleo.draw(screen)
-    # food.draw(screen)
-    # food2.draw(screen)
-    yummy_group.draw(screen)
-    pygame.display.update()
+    cleo.update()
+
+def end_screen():
+    if not running:
+        return
+
+    screen.fill((15, 67, 52))
+    draw_text("Game Over", 48, (255, 255, 255), screen_width / 2, screen_height / 4)
+    draw_text("Purr points: " + str(score), 22, (255, 255, 255), screen_width / 2, screen_height / 2 )
+    pygame.display.flip()
+    wait_for_key()
+
+def run():
+    playing = True
+    while playing:
+        
+        got_cheese = pygame.sprite.groupcollide(
+        cleo_group, yummy_group, False, True, pygame.sprite.collide_mask)
+
+        for hit in got_cheese:
+            global score 
+            score += 16
+            meow.play()
+
+        got_mouse = pygame.sprite.groupcollide(
+        cleo_group, mouse_group, False, True, pygame.sprite.collide_mask)
+
+        for hit in got_mouse:
+            #global score 
+            score += 19
+            purr.play()    
+        
+        for event in pygame.event.get(): 
+            if event.type == SONG_END:
+                end_screen()
+                print("the song ended!")
+            elif event.type == pygame.QUIT:
+                running = False
+            elif event.type == add_cheese_reward:
+                new_reward = Reward(
+                    random.randrange(50, screen_width), 
+                    random.randrange(40, screen_height - 30),
+                    cheese)
+                yummy_group.add(new_reward)
+                all_sprites.add(new_reward)    
+            elif event.type == add_mouse_reward:
+                new_mouse_reward = Reward(
+                    random.randrange(50, screen_width), 
+                    random.randrange(40, screen_height - 30),
+                    mouse)
+                mouse_group.add(new_mouse_reward)
+                all_sprites.add(new_mouse_reward)    
+
+        clock.tick(30)
+        pygame.display.update()  
+        cleo.update()  
+        redrawGameWindow()
+        yummy_group.update()
+        mouse_group.update()
+
+def wait_for_key():
+    waiting = True
+    while waiting:
+        clock.tick(30)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                waiting = False
+                running = False
+            if event.type == pygame.KEYUP:
+                waiting = False
+                running = True  
+                redrawGameWindow()                    
+
+def draw_text(text, size, color, x, y):
+    font = pygame.font.Font(pygame.font.match_font("times"), size)    
+    text_surface = font.render(text, True, color)
+    text_rect = text_surface.get_rect()
+    text_rect.midtop = (int(x), int(y))
+    screen.blit(text_surface, text_rect)
 
 
-#Loop to keep displaying the window
-cleo = Player(300, 410, width, height)
+all_sprites = pygame.sprite.Group()
+cleo = Player(800, 600, 150, 150)
+all_sprites.add(cleo)
 
-# food = Reward(400, 500, 30, 30)
-# food2 = Reward (500, 600, 100, 100)
-
-#rewards to collect
+cleo_group = pygame.sprite.Group()
+cleo_group.add(cleo)
 
 yummy_group = pygame.sprite.Group()
-for  target in range (10):
+for  target in range (8):
     new_yummy = Reward(
-        random.randrange(0, screen_width), 
-        random.randrange(0, screen_height),
+        random.randrange(50, screen_width), 
+        random.randrange(40, screen_height - 30),
         cheese)
     yummy_group.add(new_yummy)
+    all_sprites.add(new_yummy)
 
-#yummy_group.add(yummy)
+mouse_group = pygame.sprite.Group()
+for  target in range (3):
+    new_mouse = Reward(
+        random.randrange(50, screen_width), 
+        random.randrange(40, screen_height - 30),
+        mouse)
+    mouse_group.add(new_mouse)
+    all_sprites.add(new_mouse)    
 
-running = True 
+splash_screen()
+
 while running:
-    clock.tick(30)
-    for event in pygame.event.get(): 
-        if event.type == pygame.QUIT:
-            running = False
-
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT] and cleo.x > cleo.vel:
-        cleo.x -= cleo.vel
-        cleo.left = True
-        cleo.right = False 
-        cleo.down = False
-        cleo.up = False
-    elif keys[pygame.K_RIGHT] and cleo.x < screen_width - cleo.width - cleo.vel:
-        cleo.x += cleo.vel
-        cleo.right = True
-        cleo.left = False
-        cleo.down = False
-        cleo.up = False
-    elif keys[pygame.K_UP] and cleo.y > cleo.vel:
-        cleo.y -= cleo.vel
-        cleo.up = True
-        cleo.right = False
-        cleo.left = False
-        cleo.down = False
-    elif keys[pygame.K_DOWN] and cleo.y < screen_height - cleo.height:  
-        cleo.down = True
-        cleo.y += cleo.vel
-        cleo.right = False
-        cleo.left = False
-        cleo.up = False  
-    else:
-        cleo.right = False
-        cleo.left = False
-        cleo.down = False
-        cleo.up = False
-        cleo.walk_count = 0    
-
-    if not (cleo.is_jump):    
-        if keys[pygame.K_SPACE]:
-           cleo.is_jump = True   
-           cleo.right = False
-           cleo.left = False
-           cleo.walk_count = 0
-    else: 
-        if cleo.jump_count >= -10:
-            neg = 1
-            if cleo.jump_count < 0:
-                neg = -1
-            cleo.y -= int((cleo.jump_count **2) * 0.5 * neg)
-            cleo.jump_count -= 1
-        else:
-            cleo.is_jump = False
-            cleo.jump_count = 10       
-
-    redrawGameWindow()
-
-
+    run()
+    
 pygame.quit()  
 sys.exit()
