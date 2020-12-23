@@ -1,9 +1,10 @@
 # Cleo's World
+
 (This was created during my time as a student at Code Chrysalis.)
 
 A fun game with a fun cat.
 
-Let your inner cat out and live your life as Cleo-chan.  Cleo is a fun and friendly cat who likes the simply things in life.  Cheese and mice.  Run and jump around and catch them to raise your purr points!  Have fun and remember, nobody's purrfect!
+Let your inner cat out and live your life as Cleo-chan. Cleo is a fun and friendly cat who likes the simply things in life. Cheese and mice. Run and jump around and catch them to raise your purr points! Have fun and remember, nobody's purrfect!
 
 ### Here's a preview of the splash screen:
 
@@ -12,8 +13,6 @@ Let your inner cat out and live your life as Cleo-chan.  Cleo is a fun and frien
 ### This is a preview of the result screen:
 
 ![Cleo Game Page](./gamepic.png)
-
-
 
 ## Installation
 
@@ -25,7 +24,7 @@ Let your inner cat out and live your life as Cleo-chan.  Cleo is a fun and frien
 py game.py
 ```
 
-3.  Catch some mice and eat some cheese!
+3.  Catch some mice and eat some cheese! Make Cleo happy!
 
 ## Built With
 
@@ -43,4 +42,3 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 ## Created by
 
 - [Garrett Chun](https://github.com/KapakahiCoder)
-
