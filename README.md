@@ -4,7 +4,7 @@
 
 A fun game with a fun cat.
 
-Let your inner cat out and live your life as Cleo-chan. Cleo is a fun and friendly cat who likes the simply things in life. Cheese and mice. Run and jump around and catch them to raise your purr points! Have fun and remember, nobody's purrfect!
+Let your inner cat out and live your life as Cleo-chan. Cleo is a fun and friendly cat who likes the simply things in life. Cheese and mice. Run and jump around and catch them to raise your purr points! Have fun and remember, nobody's purrrrfect!
 
 ### Here's a preview of the splash screen:
 
